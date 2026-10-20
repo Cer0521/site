@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>{{ s.row['name'] }} <span class="tag {{ s.css }}">{{ s.label }}</span></h2>
+<p>{{ s.row['ref'] }} &middot; {{ s.row['email'] }} &middot; {{ s.row['program'] }}, {{ s.row['campus'] }}</p></div>
+<div class="card"><table><tr><th>Requirement</th><th>Status</th><th>Review</th></tr>
+{% for d in s.docs %}<tr><td>{{ d.type }}</td><td><span class="tag {{ 'ok' if d.status=='accepted' else 'bad' if d.status=='rejected' else 'warn' }}">{{ d.status }}</span>
+{% if d.file %}<br><a href="{{ url_for('file', doc_id=d.id) }}">{{ d.file }}</a>{% endif %}{% if d.note %}<br><span class="mute">{{ d.note }}</span>{% endif %}</td>
+<td>{% if d.id %}<form class="inline" method="post" action="{{ url_for('review', doc_id=d.id, action='accept') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Accept</button></form>
+<form class="inline" method="post" action="{{ url_for('review', doc_id=d.id, action='reject') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input name="note" placeholder="Reason" aria-label="Reason" style="width:150px"><button class="alt">Reject</button></form>{% else %}<span class="mute">not submitted</span>{% endif %}</td></tr>{% endfor %}</table></div>{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block body %}
+<div class="grid"><div class="card"><div class="big">{{ st.total }}</div>students registered</div>
+<div class="card"><div class="big">{{ st.by['Enrolled'] }}</div>enrolled</div>
+<div class="card"><div class="big">{{ st.by['Under review'] }}</div>under review</div>
+<div class="card"><div class="big">{{ st.by['Action needed'] + st.by['Documents incomplete'] }}</div>need action</div></div>
+<div class="grid"><div class="card"><h2>Objective checks</h2>
+<p>Documents all submitted (target 90%): <b>{{ st.pct }}%</b> ({{ st.all_in }} of {{ st.total }})</p><div class="bar"><i style="width:{{ st.pct }}%"></i></div>
+<p>Average QR check time (target under 10 s): <b>{% if st.avg_ms is not none %}{{ st.avg_ms }} ms{% else %}no checks yet{% endif %}</b> over {{ st.checks }} valid checks</p></div>
+<div class="card"><h2>By campus</h2>{% for r in st.campus %}<p>{{ r['k'] }}: {{ r['n'] }}</p>{% endfor %}</div>
+<div class="card"><h2>By program</h2>{% for r in st.program %}<p>{{ r['k'] }}: {{ r['n'] }}</p>{% endfor %}</div></div>
+<div class="card"><h2>All students</h2><table><tr><th>Ref</th><th>Name</th><th>Program</th><th>Campus</th><th>Status</th></tr>
+{% for s in rows %}<tr><td><a href="{{ url_for('detail', ref=s.row['ref']) }}">{{ s.row['ref'] }}</a></td><td>{{ s.row['name'] }}</td><td>{{ s.row['program'] }}</td><td>{{ s.row['campus'] }}</td><td><span class="tag {{ s.css }}">{{ s.label }}</span></td></tr>{% endfor %}</table></div>{% endblock %}

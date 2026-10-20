@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Register for enrollment</h2>
+<p class="mute">One form for every program and both campuses. Document deadline: {{ deadline }}. Late compliance cancels admission.</p>
+<form method="post" action="{{ url_for('register') }}"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label for="name">Full name</label><input id="name" name="name" value="{{ form.get('name','') }}" required maxlength="80">
+<label for="email">Email</label><input id="email" name="email" type="email" value="{{ form.get('email','') }}" required maxlength="80">
+<label for="program">Program</label><select id="program" name="program">{% for p in programs %}<option {{ 'selected' if form.get('program')==p }}>{{ p }}</option>{% endfor %}</select>
+<label for="campus">Campus</label><select id="campus" name="campus">{% for c in campuses %}<option {{ 'selected' if form.get('campus')==c }}>{{ c }}</option>{% endfor %}</select>
+<label><input type="checkbox" name="consent"> I agree that BCC may process my personal data and documents for enrollment only (Data Privacy Act, RA 10173).</label>
+<p><button>Register</button></p></form></div>{% endblock %}

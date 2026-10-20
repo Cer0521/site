@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block body %}
+<div class="grid"><div class="card"><h2>{{ s.row['name'] }}</h2>
+<p>{{ s.row['ref'] }}<br>{{ s.row['program'] }}, {{ s.row['campus'] }} campus</p>
+<p><span class="tag {{ s.css }}">{{ s.label }}</span></p></div>
+<div class="card"><h2>My enrollment QR code</h2><img src="{{ url_for('qr', ref=s.row['ref']) }}" width="170" height="170" alt="Enrollment QR code">
+<p class="mute">Show this to the registrar. It cannot be edited and expires in 30 days.</p></div></div>
+<div class="card"><h2>Documents (PDF, JPG or PNG, up to 2 MB)</h2>
+<table><tr><th>Requirement</th><th>Status</th><th>Upload</th></tr>
+{% for d in s.docs %}<tr><td>{{ d.type }}</td>
+<td><span class="tag {{ 'ok' if d.status=='accepted' else 'bad' if d.status=='rejected' else 'warn' }}">{{ d.status }}</span>
+{% if d.file %}<br><span class="mute">{{ d.file }}</span>{% endif %}{% if d.note %}<br><span class="mute">{{ d.note }}</span>{% endif %}</td>
+<td><form method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data"><input type="hidden" name="csrf" value="{{ csrf }}">
+<input type="hidden" name="doc_type" value="{{ d.type }}"><input type="file" name="file" aria-label="File for {{ d.type }}" required>
+<button class="alt">Submit</button></form></td></tr>{% endfor %}</table></div>{% endblock %}

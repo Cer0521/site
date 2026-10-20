@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Verify a QR code</h2>
+<form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label for="token">Code from the student's QR (scan with a barcode scanner or phone and paste it here)</label><input id="token" name="token" autofocus required>
+<p><button>Verify</button></p></form></div>
+{% if result %}<div class="card" role="status">{% if result.ok %}<p class="ok"><b>Valid code</b> ({{ result.ms }} ms)</p>
+<p>{{ result.s.row['name'] }}, {{ result.s.row['program'] }}, {{ result.s.row['campus'] }} campus</p><p><span class="tag {{ result.s.css }}">{{ result.s.label }}</span></p>
+{% else %}<p class="bad"><b>Not valid.</b> {{ result.msg }}</p>{% endif %}</div>{% endif %}{% endblock %}

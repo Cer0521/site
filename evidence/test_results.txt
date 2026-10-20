@@ -1,0 +1,29 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/claude/bcc_uers
+collecting ... collected 21 items
+
+tests/test_app.py::test_register_creates_student_and_reference PASSED    [  4%]
+tests/test_app.py::test_register_requires_consent PASSED                 [  9%]
+tests/test_app.py::test_register_rejects_bad_email_and_program PASSED    [ 14%]
+tests/test_app.py::test_duplicate_email_rejected PASSED                  [ 19%]
+tests/test_app.py::test_form_without_csrf_token_is_refused PASSED        [ 23%]
+tests/test_app.py::test_html_in_name_is_escaped PASSED                   [ 28%]
+tests/test_app.py::test_valid_upload_is_accepted_as_submitted PASSED     [ 33%]
+tests/test_app.py::test_wrong_extension_rejected PASSED                  [ 38%]
+tests/test_app.py::test_fake_image_rejected_by_content_check PASSED      [ 42%]
+tests/test_app.py::test_oversize_upload_rejected PASSED                  [ 47%]
+tests/test_app.py::test_registrar_pages_need_login PASSED                [ 52%]
+tests/test_app.py::test_wrong_registrar_password_rejected PASSED         [ 57%]
+tests/test_app.py::test_enrolled_only_when_all_documents_accepted PASSED [ 61%]
+tests/test_app.py::test_reject_shows_action_needed_and_student_can_resubmit PASSED [ 66%]
+tests/test_app.py::test_valid_qr_code_verifies_and_shows_status PASSED   [ 71%]
+tests/test_app.py::test_tampered_qr_code_is_rejected PASSED              [ 76%]
+tests/test_app.py::test_expired_qr_code_is_rejected PASSED               [ 80%]
+tests/test_app.py::test_verification_is_fast_and_logged PASSED           [ 85%]
+tests/test_app.py::test_student_cannot_see_another_students_qr PASSED    [ 90%]
+tests/test_app.py::test_audit_log_records_actions PASSED                 [ 95%]
+tests/test_app.py::test_dashboard_counts PASSED                          [100%]
+
+============================== 21 passed in 0.57s ==============================
