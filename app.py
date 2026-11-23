@@ -308,7 +308,12 @@ def registrar_required(f):
 def student_required(f):
     @wraps(f)
     def wrapper(*a, **k):
-        if not session.get("ref"):
+        ref = session.get("ref")
+        if not ref:
+            return redirect(url_for("lookup"))
+        if not student_by_ref(ref):
+            session.pop("ref", None)
+            flash("That student session is no longer valid. Check your status again.", "bad")
             return redirect(url_for("lookup"))
         return f(*a, **k)
     return wrapper
