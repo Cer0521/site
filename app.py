@@ -520,5 +520,8 @@ def create_app(config=None):
     return app
 
 
+# Top-level application instance for WSGI / Vercel
+app = create_app()
+
 if __name__ == "__main__":
-    create_app().run(debug=False)
+    app.run(debug=False)
