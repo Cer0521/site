@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block body %}
+{% if state == "valid" %}
+<div class="card" style="text-align:center">
+  <h1 class="ok">REGISTERED</h1>
+  <p><b>{{ s.row["name"] }}</b></p>
+  <p>{{ s.row["program"] }}, Year {{ s.row["year_level"] }}, {{ s.row["campus"] }} campus</p>
+  {% if s.enrolled %}
+  <p><span class="tag ok">Officially enrolled</span></p>
+  {% else %}
+  <p><span class="tag warn">Enrollment in progress</span></p>
+  {% endif %}
+  <p class="mute">SY {{ term[0] }}, Semester {{ term[1] }}</p>
+</div>
+{% elif state == "busy" %}
+<div class="card" style="text-align:center">
+  <h1 class="warn">PLEASE TRY AGAIN</h1>
+  <p>The verification service received too many scans. Wait briefly and try again.</p>
+</div>
+{% else %}
+<div class="card" style="text-align:center">
+  <h1 class="bad">NOT VALID</h1>
+  <p>{{ message or "This QR code could not be verified." }}</p>
+</div>
+{% endif %}
+{% endblock %}

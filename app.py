@@ -26,7 +26,7 @@ from db import get_db_connection, PG_SCHEMA, DBAdapter
 
 import qrcode
 from flask import (Flask, abort, current_app, flash, g, redirect, render_template,
-                   request, send_file, session, url_for)
+                   request, send_file, session, url_for, make_response)
 
 DOCS = ["Report card or TOR", "Valid ID", "Birth certificate", "2x2 photo"]
 PROGRAMS = ["BEED", "BSED", "BSBA-MM", "BSEntrep", "BSOA", "BSIS"]
@@ -266,6 +266,28 @@ def check_token(token):
     return True, "Valid code.", row
 
 
+def verify_url(ref):
+    base = (current_app.config.get("PUBLIC_URL") or request.host_url).rstrip("/")
+    return f"{base}/v/{make_token(ref)}"
+
+
+def extract_token(text):
+    text = (text or "").strip()
+    if "/v/" in text:
+        text = text.split("/v/", 1)[1]
+    return text.split("?", 1)[0].split("#", 1)[0].strip()
+
+
+def rate_limited():
+    hits = current_app.extensions.setdefault("scan_hits", {})
+    key = request.remote_addr or "unknown"
+    now_time = time.time()
+    recent = [stamp for stamp in hits.get(key, []) if now_time - stamp < 60]
+    recent.append(now_time)
+    hits[key] = recent
+    return len(recent) > current_app.config["RATE_LIMIT_PER_MIN"]
+
+
 # ---------- access control ----------
 def registrar_required(f):
     @wraps(f)
@@ -297,7 +319,9 @@ def create_app(config=None):
         REGISTRAR_PASSWORD=os.environ.get("REGISTRAR_PASSWORD", "registrar123"),
         MAX_CONTENT_LENGTH=2 * 1024 * 1024, TOKEN_DAYS=30, DEADLINE="2027-07-12",
         SESSION_COOKIE_SAMESITE="Lax", SESSION_COOKIE_HTTPONLY=True,
-        SESSION_COOKIE_SECURE=os.environ.get("COOKIE_SECURE") == "1")
+        SESSION_COOKIE_SECURE=os.environ.get("COOKIE_SECURE") == "1",
+        PUBLIC_URL=os.environ.get("PUBLIC_URL", ""),
+        RATE_LIMIT_PER_MIN=60)
     # On read-only serverless filesystems (like Vercel / AWS Lambda), store in /tmp if instance_path is not writeable
     upload_dir = "/tmp/uploads" if os.environ.get("VERCEL") else os.path.join(app.instance_path, "uploads")
     db_path = "/tmp/uers.db" if os.environ.get("VERCEL") else os.path.join(app.instance_path, "uers.db")
@@ -422,10 +446,46 @@ def create_app(config=None):
             abort(403)
         if not student_by_ref(ref):
             abort(404)
+        code = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=8, border=2)
+        code.add_data(verify_url(ref))
+        code.make(fit=True)
         buf = io.BytesIO()
-        qrcode.make(make_token(ref)).save(buf, format="PNG")
+        code.make_image().save(buf, format="PNG")
         buf.seek(0)
         return send_file(buf, mimetype="image/png")
+
+    @app.get("/v/<token>")
+    def public_verify(token):
+        if rate_limited():
+            return render_template("scan.html", state="busy"), 429
+
+        started = time.perf_counter()
+        ok, message, row = check_token(token)
+        elapsed = (time.perf_counter() - started) * 1000
+        db = get_db()
+        db.execute(
+            "INSERT INTO verifications(ts,ref,ok,ms) VALUES(?,?,?,?)",
+            (now(), row["ref"] if row else None, int(ok), elapsed),
+        )
+        db.commit()
+        audit(
+            "registrar scan" if session.get("registrar") else "public scan",
+            f"QR opened for {row['ref']}" if ok else f"invalid QR opened ({message})",
+        )
+
+        if not ok:
+            status = 410 if "expired" in message.lower() else 404
+            return render_template("scan.html", state="invalid", message=message), status
+
+        response = make_response(render_template(
+            "scan.html",
+            state="valid",
+            message=message,
+            s=summary(row),
+            term=(setting("school_year"), setting("semester")),
+        ))
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        return response
 
     @app.get("/logout")
     def logout():
@@ -505,7 +565,7 @@ def create_app(config=None):
         result = None
         if request.method == "POST":
             t0 = time.perf_counter()
-            ok, msg, row = check_token(request.form.get("token", ""))
+            ok, msg, row = check_token(extract_token(request.form.get("token", "")))
             ms = (time.perf_counter() - t0) * 1000
             ref = row["ref"] if row else None
             db = get_db()
