@@ -298,13 +298,19 @@ def create_app(config=None):
         MAX_CONTENT_LENGTH=2 * 1024 * 1024, TOKEN_DAYS=30, DEADLINE="2027-07-12",
         SESSION_COOKIE_SAMESITE="Lax", SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SECURE=os.environ.get("COOKIE_SECURE") == "1")
-    app.config["DATABASE"] = os.path.join(app.instance_path, "uers.db")
-    app.config["UPLOAD_DIR"] = os.path.join(app.instance_path, "uploads")
+    # On read-only serverless filesystems (like Vercel / AWS Lambda), store in /tmp if instance_path is not writeable
+    upload_dir = "/tmp/uploads" if os.environ.get("VERCEL") else os.path.join(app.instance_path, "uploads")
+    db_path = "/tmp/uers.db" if os.environ.get("VERCEL") else os.path.join(app.instance_path, "uers.db")
+    app.config["DATABASE"] = db_path
+    app.config["UPLOAD_DIR"] = upload_dir
     if os.environ.get("DATABASE_URL"):
         app.config["DATABASE_URL"] = os.environ.get("DATABASE_URL")
     if config:
         app.config.update(config)
-    os.makedirs(app.config["UPLOAD_DIR"], exist_ok=True)
+    try:
+        os.makedirs(app.config["UPLOAD_DIR"], exist_ok=True)
+    except Exception:
+        pass
     db = get_db_connection(app.config)
     if not db.is_pg:
         db.executescript(SCHEMA)
