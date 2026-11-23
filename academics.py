@@ -6,6 +6,12 @@ import io
 import re
 import sqlite3
 
+try:
+    import psycopg2
+    PG_ERRORS = (sqlite3.IntegrityError, psycopg2.IntegrityError)
+except ImportError:
+    PG_ERRORS = (sqlite3.IntegrityError,)
+
 from flask import Response, abort, flash, redirect, render_template, request, url_for
 
 from app import (METHODS, PLANS, PROGRAMS, CAMPUSES, audit, current_student, get_db, insert_student,
@@ -171,7 +177,7 @@ def register_academics(app):
                 db.execute("INSERT INTO subjects(code,title,units,program,year_level,semester) VALUES(?,?,?,?,?,?)",
                            (code, title, units, program, year, sem))
                 added += 1
-            except (ValueError, KeyError, AttributeError, sqlite3.IntegrityError):
+            except (ValueError, KeyError, AttributeError, *PG_ERRORS):
                 skipped += 1
         db.commit()
         audit("registrar", f"imported subjects: {added} added, {skipped} skipped")
@@ -220,7 +226,7 @@ def register_academics(app):
                     db.commit()
                     audit("registrar", f"added section {code} for subject id {subject_id}")
                     flash("Section added.", "ok")
-                except sqlite3.IntegrityError:
+                except PG_ERRORS:
                     flash("That subject already has a section with this code.", "bad")
             return redirect(url_for("sections"))
         rows = db.execute("""SELECT sec.*, sub.code, sub.title, sub.units FROM sections sec

@@ -19,6 +19,11 @@ import uuid
 from datetime import datetime
 from functools import wraps
 
+from dotenv import load_dotenv
+load_dotenv()
+
+from db import get_db_connection, PG_SCHEMA, DBAdapter
+
 import qrcode
 from flask import (Flask, abort, current_app, flash, g, redirect, render_template,
                    request, send_file, session, url_for)
@@ -82,9 +87,7 @@ def peso(x):
 
 def get_db():
     if "db" not in g:
-        g.db = sqlite3.connect(current_app.config["DATABASE"])
-        g.db.row_factory = sqlite3.Row
-        g.db.execute("PRAGMA foreign_keys=ON")
+        g.db = get_db_connection(current_app.config)
     return g.db
 
 
@@ -297,13 +300,20 @@ def create_app(config=None):
         SESSION_COOKIE_SECURE=os.environ.get("COOKIE_SECURE") == "1")
     app.config["DATABASE"] = os.path.join(app.instance_path, "uers.db")
     app.config["UPLOAD_DIR"] = os.path.join(app.instance_path, "uploads")
+    if os.environ.get("DATABASE_URL"):
+        app.config["DATABASE_URL"] = os.environ.get("DATABASE_URL")
     if config:
         app.config.update(config)
     os.makedirs(app.config["UPLOAD_DIR"], exist_ok=True)
-    with sqlite3.connect(app.config["DATABASE"]) as db:
+    db = get_db_connection(app.config)
+    if not db.is_pg:
         db.executescript(SCHEMA)
         if "year_level" not in [r[1] for r in db.execute("PRAGMA table_info(students)")]:
             db.execute("ALTER TABLE students ADD COLUMN year_level INTEGER NOT NULL DEFAULT 1")
+    else:
+        db.executescript(PG_SCHEMA)
+    db.commit()
+    db.close()
     app.add_template_filter(peso, "peso")
 
     @app.teardown_appcontext
