@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Assessment of fees</h2>
+<table>{% for name, amt in s.assessment.lines %}<tr><td>{{ name }}</td><td class="right">{{ amt|peso }}</td></tr>{% endfor %}
+<tr><th>Total</th><th class="right">{{ s.assessment.total|peso }}</th></tr></table>
+<p>Paid so far: <b>{{ s.paid|peso }}</b>. Balance: <b>{{ s.balance|peso }}</b>. Needed to be enrolled: <b>{{ s.required|peso }}</b>.</p>
+<p><a class="btn alt" href="{{ url_for('student_slip', kind='assessment') }}">Assessment slip</a></p></div>
+<div class="card"><h2>Choose how you will pay</h2>
+<p class="mute">This only records your choice. Pay at the cashier or by the chosen method, and the registrar will record your payment.</p>
+<form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>Plan</label>{% for k, v in PLANS.items() %}<label class="row"><input type="radio" name="plan" value="{{ k }}" {{ 'checked' if s.plan and s.plan['plan']==k }}> {{ v }}</label>{% endfor %}
+<label>Method</label>{% for k, v in METHODS.items() %}<label class="row"><input type="radio" name="method" value="{{ k }}" {{ 'checked' if s.plan and s.plan['method']==k }}> {{ v }}</label>{% endfor %}
+<p><button>Save my choice</button></p></form></div>
+<div class="card"><h2>Payments recorded by the registrar</h2>
+{% if pays %}<table><tr><th>Date</th><th>Amount</th><th>Method</th></tr>{% for p in pays %}<tr><td>{{ p['ts'] }}</td><td>{{ p['amount']|peso }}</td><td>{{ METHODS[p['method']] }}</td></tr>{% endfor %}</table>{% else %}<p class="mute">None yet.</p>{% endif %}</div>{% endblock %}

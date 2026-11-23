@@ -1,7 +1,4 @@
-__pycache__/
-*.py[cod]
-*$py.class
 venv/
+instance/
+__pycache__/
 .pytest_cache/
-.env
-instance/uploads/

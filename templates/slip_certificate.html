@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block body %}
+<div class="card" style="text-align:center"><h2>Certificate of Enrollment</h2>
+<p>This certifies that <b>{{ s.row['name'] }}</b> ({{ s.row['ref'] }}) is officially enrolled in <b>{{ s.row['program'] }}</b>, Year {{ s.row['year_level'] }}, at Bacolod City College, {{ s.row['campus'] }} campus, for School Year {{ term[0] }}, Semester {{ term[1] }}, with {{ s.assessment.units }} units.</p>
+<img src="{{ url_for('qr', ref=s.row['ref']) }}" width="150" height="150" alt="Verification QR code">
+<p class="mute">Scan to verify with the Registrar's Office. Code: <code>{{ token }}</code></p>
+<p class="mute">Demonstration layout from the BCC-UERS system. Not an official BCC document until adopted by the Registrar.</p>
+<p class="noprint"><button onclick="window.print()">Print</button></p></div>{% endblock %}

@@ -7,7 +7,7 @@
 header{background:var(--acc);color:#fff;padding:12px 16px}header a{color:#fff;margin-right:14px}
 main{max-width:960px;margin:16px auto;padding:0 16px}.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px}
 label{display:block;font-size:13px;margin:8px 0 2px}input,select{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px}
-input[type=checkbox]{width:auto}button,.btn{font:inherit;padding:8px 14px;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
+input[type=checkbox],input[type=radio]{width:auto}button,.btn{font:inherit;padding:8px 14px;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
 button.alt{background:#fff;color:var(--ink);border-color:var(--line)}
 table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
 .tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;border:1px solid currentColor}
@@ -16,12 +16,13 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;p
 .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.big{font-size:28px;font-weight:700}
 .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
 code{word-break:break-all}form.inline{display:inline}
+.steps p{margin:2px 0}.right{text-align:right}
+@media print{.noprint,button,.btn,form{display:none!important}body{background:#fff}.card{border:0;padding:0}}
 </style></head><body>
-<header><b>Bacolod City College Enrollment</b> &nbsp;
-{% if not is_registrar and not session.get('ref') %}<a href="{{ url_for('home') }}">Register</a>{% endif %}
-{% if not is_registrar %}<a href="{{ url_for('lookup') }}">Check my status</a>{% endif %}
-{% if is_registrar %}<a href="{{ url_for('dashboard') }}">Dashboard</a><a href="{{ url_for('verify') }}">Verify QR</a><a href="{{ url_for('audit_log') }}">Audit log</a>
-{% elif not session.get('ref') %}<a href="{{ url_for('login') }}">Registrar</a>{% endif %}
-<a href="{{ url_for('logout') }}">Sign out</a></header>
+<header class="noprint"><b>Bacolod City College Enrollment</b> &nbsp;
+{% if is_registrar %}<a href="{{ url_for('dashboard') }}">Dashboard</a><a href="{{ url_for('subjects') }}">Subjects</a><a href="{{ url_for('sections') }}">Sections</a><a href="{{ url_for('fees') }}">Fees</a><a href="{{ url_for('reports') }}">Reports</a><a href="{{ url_for('new_student') }}">New record</a><a href="{{ url_for('verify') }}">Verify QR</a><a href="{{ url_for('audit_log') }}">Audit log</a>
+{% elif is_student %}<a href="{{ url_for('student') }}">My page</a><a href="{{ url_for('advising') }}">Subjects</a><a href="{{ url_for('payment') }}">Payment</a>
+{% else %}<a href="{{ url_for('home') }}">Register</a><a href="{{ url_for('lookup') }}">Check my status</a><a href="{{ url_for('login') }}">Registrar</a>{% endif %}
+{% if is_registrar or is_student %}<a href="{{ url_for('logout') }}">Sign out</a>{% endif %}</header>
 <main>{% with m = get_flashed_messages(with_categories=true) %}{% for c, t in m %}<div class="msg {{ c }}" role="alert">{{ t }}</div>{% endfor %}{% endwith %}
 {% block body %}{% endblock %}</main></body></html>

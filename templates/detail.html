@@ -1,8 +1,27 @@
 {% extends "base.html" %}{% block body %}
 <div class="card"><h2>{{ s.row['name'] }} <span class="tag {{ s.css }}">{{ s.label }}</span></h2>
-<p>{{ s.row['ref'] }} &middot; {{ s.row['email'] }} &middot; {{ s.row['program'] }}, {{ s.row['campus'] }}</p></div>
-<div class="card"><table><tr><th>Requirement</th><th>Status</th><th>Review</th></tr>
+<p>{{ s.row['ref'] }} &middot; {{ s.row['email'] }} &middot; {{ s.row['program'] }}, Year {{ s.row['year_level'] }}, {{ s.row['campus'] }}</p>
+<p><a class="btn alt" href="{{ url_for('edit_student', ref=s.row['ref']) }}">Edit record</a>
+<a class="btn alt" href="{{ url_for('registrar_slip', ref=s.row['ref'], kind='advising') }}">Advising slip</a>
+<a class="btn alt" href="{{ url_for('registrar_slip', ref=s.row['ref'], kind='assessment') }}">Assessment slip</a>
+{% if s.enrolled %}<a class="btn alt" href="{{ url_for('registrar_slip', ref=s.row['ref'], kind='certificate') }}">Certificate</a>{% endif %}</p></div>
+<div class="card"><h2>1. Documents</h2><table><tr><th>Requirement</th><th>Status</th><th>Review</th></tr>
 {% for d in s.docs %}<tr><td>{{ d.type }}</td><td><span class="tag {{ 'ok' if d.status=='accepted' else 'bad' if d.status=='rejected' else 'warn' }}">{{ d.status }}</span>
 {% if d.file %}<br><a href="{{ url_for('file', doc_id=d.id) }}">{{ d.file }}</a>{% endif %}{% if d.note %}<br><span class="mute">{{ d.note }}</span>{% endif %}</td>
 <td>{% if d.id %}<form class="inline" method="post" action="{{ url_for('review', doc_id=d.id, action='accept') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Accept</button></form>
-<form class="inline" method="post" action="{{ url_for('review', doc_id=d.id, action='reject') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input name="note" placeholder="Reason" aria-label="Reason" style="width:150px"><button class="alt">Reject</button></form>{% else %}<span class="mute">not submitted</span>{% endif %}</td></tr>{% endfor %}</table></div>{% endblock %}
+<form class="inline" method="post" action="{{ url_for('review', doc_id=d.id, action='reject') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input name="note" placeholder="Reason" aria-label="Reason" style="width:150px"><button class="alt">Reject</button></form>{% else %}<span class="mute">not submitted</span>{% endif %}</td></tr>{% endfor %}</table></div>
+<div class="card"><h2>2. Subjects and schedule</h2>
+{% if s.assessment.rows %}<table><tr><th>Subject</th><th>Section</th><th>Days and time</th><th>Room</th><th>Units</th></tr>
+{% for r in s.assessment.rows %}<tr><td>{{ r['code'] }} {{ r['title'] }}</td><td>{{ r['section_code'] }}</td><td>{{ r['days'] }} {{ r['time_start'] }} to {{ r['time_end'] }}</td><td>{{ r['room'] }}</td><td>{{ r['units'] }}</td></tr>{% endfor %}</table>
+<p>Status: <span class="tag {{ 'ok' if s.adv_status=='approved' else 'bad' if s.adv_status=='rejected' else 'warn' }}">{{ s.adv_status }}</span>{% if s.adv_note %} <span class="mute">{{ s.adv_note }}</span>{% endif %}</p>
+<form class="inline" method="post" action="{{ url_for('advising_decision', ref=s.row['ref'], action='approve') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button>Approve subjects</button></form>
+<form class="inline" method="post" action="{{ url_for('advising_decision', ref=s.row['ref'], action='reject') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input name="note" placeholder="Reason" aria-label="Reason" style="width:170px"><button class="alt">Send back or reopen</button></form>
+{% else %}<p class="mute">The student has not chosen subjects yet.</p>{% endif %}</div>
+<div class="card"><h2>3. Assessment and payment</h2>
+{% if s.assessment.rows %}<table>{% for name, amt in s.assessment.lines %}<tr><td>{{ name }}</td><td class="right">{{ amt|peso }}</td></tr>{% endfor %}<tr><th>Total</th><th class="right">{{ s.assessment.total|peso }}</th></tr></table>
+<p>Choice: {% if s.plan %}{{ PLANS[s.plan['plan']] }} via {{ METHODS[s.plan['method']] }}{% else %}none yet{% endif %}. Needed to enroll: <b>{{ s.required|peso }}</b>. Paid: <b>{{ s.paid|peso }}</b>. Balance: <b>{{ s.balance|peso }}</b>.</p>
+{% if pays %}<table><tr><th>Date</th><th>Amount</th><th>Method</th><th>Note</th></tr>{% for p in pays %}<tr><td>{{ p['ts'] }}</td><td>{{ p['amount']|peso }}</td><td>{{ METHODS[p['method']] }}</td><td>{{ p['note'] }}</td></tr>{% endfor %}</table>{% endif %}
+<form method="post" action="{{ url_for('record_payment', ref=s.row['ref']) }}" class="row"><input type="hidden" name="csrf" value="{{ csrf }}">
+<input name="amount" placeholder="Amount received" aria-label="Amount received" style="width:160px"><select name="method" aria-label="Method" style="width:170px">{% for k, v in METHODS.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}</select>
+<input name="note" placeholder="Note (optional)" aria-label="Note" style="width:180px"><button>Record payment</button></form>
+{% else %}<p class="mute">No assessment until the student chooses subjects.</p>{% endif %}</div>{% endblock %}

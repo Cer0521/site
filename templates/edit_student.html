@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Edit record {{ row['ref'] }}</h2><p class="mute">Email: {{ row['email'] }} (cannot be changed here). Changing program or year clears the chosen subjects.</p>
+<form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label for="name">Full name</label><input id="name" name="name" value="{{ row['name'] }}" required maxlength="80">
+<label for="program">Program</label><select id="program" name="program">{% for p in programs %}<option {{ 'selected' if row['program']==p }}>{{ p }}</option>{% endfor %}</select>
+<label for="year_level">Year level</label><select id="year_level" name="year_level">{% for y in [1,2,3,4] %}<option value="{{ y }}" {{ 'selected' if row['year_level']==y }}>Year {{ y }}</option>{% endfor %}</select>
+<label for="campus">Campus</label><select id="campus" name="campus">{% for c in campuses %}<option {{ 'selected' if row['campus']==c }}>{{ c }}</option>{% endfor %}</select>
+<p><button>Save changes</button> <a class="btn alt" href="{{ url_for('detail', ref=row['ref']) }}">Cancel</a></p></form></div>{% endblock %}

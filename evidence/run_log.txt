@@ -1,20 +1,27 @@
-BCC-UERS end to end run
-[21:46:55] Registered Ana Reyes -> BCC-2027-0001 (BSIS, Taculing)
-[21:46:55]   uploaded 4 of 4 documents
-[21:46:56]   tried uploading a fake PNG -> refused: Only real PDF, JPG or PNG files are accepted.
-[21:46:56] Registered Ben Cruz -> BCC-2027-0002 (BEED, Sum-ag)
-[21:46:56]   uploaded 4 of 4 documents
-[21:46:57] Registered Cathy Lim -> BCC-2027-0003 (BSBA-MM, Taculing)
-[21:46:57]   uploaded 2 of 4 documents
-[21:46:57] Registered Dan Uy -> BCC-2027-0004 (BSOA, Sum-ag)
-[21:46:58]   uploaded 1 of 4 documents
-[21:46:58] Registered Eli Tan -> BCC-2027-0005 (BSED, Taculing)
-[21:46:58]   uploaded 3 of 4 documents
-[21:46:58] Registrar signed in
-[21:46:59] Accepted all 4 documents for Ana Reyes
-[21:46:59] Accepted all 4 documents for Ben Cruz
-[21:46:59] Rejected one of Cathy Lim's documents (reason: ID is blurry)
-[21:47:00] Verified valid code: Valid code (0.34 ms) Ana Reyes, BSIS, Taculing campus Enrolled
-[21:47:00] Verified tampered code: Not valid. Code was altered or forged.
-[21:47:00] Verified garbage text: Not valid. Not a BCC code.
-[21:47:03] Dashboard cards: 5 students registered | 2 enrolled | 0 under review | 3 need action | Objective checks Documents all submitted (target 90%): 40% (2 of 5) Average QR check time (target under 10 s): 0.5 ms over 26 valid checks
+BCC-UERS whole system, end to end run
+[11:03:37] Registered Ana Reyes -> BCC-2027-0001 (BSIS, year 1, Taculing)
+[11:03:37]   uploaded 4 of 4 documents
+[11:03:38]   tried uploading a fake PNG, refused: Only real PDF, JPG or PNG files are accepted.
+[11:03:38] Registered Ben Cruz -> BCC-2027-0002 (BEED, year 1, Sum-ag)
+[11:03:38]   uploaded 4 of 4 documents
+[11:03:39] Registered Cathy Lim -> BCC-2027-0003 (BSBA-MM, year 1, Taculing)
+[11:03:39]   uploaded 2 of 4 documents
+[11:03:39] Registered Dan Uy -> BCC-2027-0004 (BSOA, year 1, Sum-ag)
+[11:03:39]   uploaded 1 of 4 documents
+[11:03:39] Registered Eli Tan -> BCC-2027-0005 (BSED, year 1, Taculing)
+[11:03:40]   uploaded 3 of 4 documents
+[11:03:40] Registrar signed in (menu shows registrar tools only)
+[11:03:40] Accepted all 4 documents for Ana Reyes
+[11:03:41] Accepted all 4 documents for Ben Cruz
+[11:03:41] Rejected one of Cathy Lim's documents (reason: ID is blurry)
+[11:03:41] Ana Reyes chose subjects GE 101 A, GE 102 A, IS 101 A: Subjects submitted: 9 units. The registrar will review them.
+[11:03:41] Ana Reyes chose payment plan: full at the cashier
+[11:03:42] Registrar approved subjects for Ana Reyes and recorded payment of PHP 520.00
+[11:03:42] Ben Cruz chose subjects GE 101 B, GE 103 B, ED 101 A: Subjects submitted: 9 units. The registrar will review them.
+[11:03:42] Ben Cruz chose payment plan: installment at the cashier
+[11:03:43] Registrar approved subjects for Ben Cruz and recorded payment of PHP 260.00
+[11:03:43] Ana Reyes is officially enrolled; certificate issued with QR code
+[11:03:43] QR check (valid code): Valid code (0.32 ms) Ana Reyes, BSIS, Taculing campus Officially enrolled
+[11:03:43] QR check (tampered code): Not valid. Code was altered or forged.
+[11:03:43] QR check (garbage code): Not valid. Not a BCC code.
+[11:03:46] Dashboard cards: 5 students registered | 2 officially enrolled | 2 in progress | 1 need action | 0 subjects waiting for approval | Objective checks Documents all submitted (target 90%): 40% (2 of 5) Average QR check time (target under 10 s): 0.4 ms over 26 valid checks | Fees Assessed: ₱1,040.00 Collected: ₱780.00 | By campus Sum-ag: 2 Taculing: 3

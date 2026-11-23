@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Assessment slip</h2><p><b>{{ s.row['name'] }}</b> ({{ s.row['ref'] }})<br>{{ s.row['program'] }}, Year {{ s.row['year_level'] }}<br>SY {{ term[0] }}, Semester {{ term[1] }}</p>
+<table>{% for name, amt in s.assessment.lines %}<tr><td>{{ name }}</td><td class="right">{{ amt|peso }}</td></tr>{% endfor %}
+<tr><th>Total assessed</th><th class="right">{{ s.assessment.total|peso }}</th></tr>
+<tr><td>Paid</td><td class="right">{{ s.paid|peso }}</td></tr><tr><th>Balance</th><th class="right">{{ s.balance|peso }}</th></tr></table>
+<p>Payment choice: {% if s.plan %}{{ PLANS[s.plan['plan']] }} via {{ METHODS[s.plan['method']] }}{% else %}not chosen yet{% endif %}</p>
+<p class="noprint"><button onclick="window.print()">Print</button></p></div>{% endblock %}

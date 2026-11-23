@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Choose subjects and schedule</h2>
+<p>{{ s.row['program'] }}, Year {{ s.row['year_level'] }}, SY {{ term[0] }}, Semester {{ term[1] }}. Maximum load: {{ max_units }} units. One section per subject; classes that meet at the same time cannot be combined.</p>
+{% if sample %}<p class="mute">Sample curriculum for demonstration. The registrar replaces it with BCC's approved curriculum.</p>{% endif %}
+<p>Status: <span class="tag {{ 'ok' if s.adv_status=='approved' else 'bad' if s.adv_status=='rejected' else 'warn' }}">{{ s.adv_status if s.adv_status!='none' else 'not submitted' }}</span>{% if s.adv_note %} <span class="mute">{{ s.adv_note }}</span>{% endif %}</p></div>
+{% if not groups %}<div class="card"><p>No subjects are open for your program and year yet. Ask the registrar.</p></div>{% else %}
+<form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+{% for g in groups %}<div class="card"><h2>{{ g.sub['code'] }} {{ g.sub['title'] }} <span class="mute">({{ g.sub['units'] }} units)</span></h2>
+<label class="row"><input type="radio" name="sec_{{ g.sub['id'] }}" value="" {{ 'checked' if not (g.secs|selectattr('chosen')|list) }}> Do not take this subject now</label>
+{% for x in g.secs %}<label class="row"><input type="radio" name="sec_{{ g.sub['id'] }}" value="{{ x.r['id'] }}" {{ 'checked' if x.chosen }} {{ 'disabled' if x.free<=0 and not x.chosen }}>
+Section {{ x.r['section_code'] }}: {{ x.r['days'] }} {{ x.r['time_start'] }} to {{ x.r['time_end'] }}, {{ x.r['room'] }}, <span class="{{ 'bad' if x.free<=0 else 'mute' }}">{{ x.free if x.free>0 else 'full' }}{{ ' seats left' if x.free>0 }}</span></label>{% endfor %}</div>{% endfor %}
+<p><button {{ 'disabled' if s.adv_status=='approved' }}>Submit subjects for approval</button></p></form>{% endif %}{% endblock %}

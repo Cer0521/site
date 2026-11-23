@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Advising slip</h2><p><b>{{ s.row['name'] }}</b> ({{ s.row['ref'] }})<br>{{ s.row['program'] }}, Year {{ s.row['year_level'] }}, {{ s.row['campus'] }} campus<br>SY {{ term[0] }}, Semester {{ term[1] }}</p>
+<table><tr><th>Subject</th><th>Section</th><th>Days and time</th><th>Room</th><th>Units</th></tr>
+{% for r in s.assessment.rows %}<tr><td>{{ r['code'] }} {{ r['title'] }}</td><td>{{ r['section_code'] }}</td><td>{{ r['days'] }} {{ r['time_start'] }} to {{ r['time_end'] }}</td><td>{{ r['room'] }}</td><td>{{ r['units'] }}</td></tr>{% endfor %}
+<tr><th colspan="4">Total units</th><th>{{ s.assessment.units }}</th></tr></table>
+<p>Subjects status: <b>{{ s.adv_status }}</b>{% if s.adv_status!='approved' %} (not final until the registrar approves){% endif %}</p>
+<p class="noprint"><button onclick="window.print()">Print</button></p></div>{% endblock %}

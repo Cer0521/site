@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Term and tuition</h2><form method="post" action="{{ url_for('settings_save') }}"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div class="grid"><div><label for="school_year">School year</label><input id="school_year" name="school_year" value="{{ cfg.school_year }}"></div>
+<div><label for="semester">Semester</label><select id="semester" name="semester"><option {{ 'selected' if cfg.semester=='1' }}>1</option><option {{ 'selected' if cfg.semester=='2' }}>2</option></select></div>
+<div><label for="tuition_per_unit">Tuition per unit (PHP)</label><input id="tuition_per_unit" name="tuition_per_unit" value="{{ cfg.tuition_per_unit }}"></div>
+<div><label for="max_units">Maximum units</label><input id="max_units" name="max_units" value="{{ cfg.max_units }}"></div></div>
+<label class="row"><input type="checkbox" name="sample_data" {{ 'checked' if cfg.sample_data=='1' }}> Show the "sample curriculum" notice to students</label>
+<p class="mute">The default tuition of 30 pesos per unit is the rate BCC publishes on its About page. Confirm it with the Registrar.</p><p><button>Save</button></p></form></div>
+<div class="card"><h2>Other fees (added to every assessment)</h2>
+<table><tr><th>Fee</th><th>Amount</th><th></th></tr>{% for f in fees %}<tr><td>{{ f['name'] }}</td><td>{{ f['amount']|peso }}</td>
+<td><form method="post" action="{{ url_for('fee_delete', fid=f['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="alt">Delete</button></form></td></tr>{% endfor %}</table>
+<form method="post" action="{{ url_for('fee_add') }}" class="row"><input type="hidden" name="csrf" value="{{ csrf }}"><input name="name" placeholder="Fee name" aria-label="Fee name" style="width:240px"><input name="amount" placeholder="Amount" aria-label="Amount" style="width:140px"><button>Add fee</button></form></div>{% endblock %}

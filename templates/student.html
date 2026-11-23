@@ -1,9 +1,20 @@
 {% extends "base.html" %}{% block body %}
 <div class="grid"><div class="card"><h2>{{ s.row['name'] }}</h2>
-<p>{{ s.row['ref'] }}<br>{{ s.row['program'] }}, {{ s.row['campus'] }} campus</p>
+<p>{{ s.row['ref'] }}<br>{{ s.row['program'] }}, Year {{ s.row['year_level'] }}, {{ s.row['campus'] }} campus<br><span class="mute">SY {{ term[0] }}, Semester {{ term[1] }}</span></p>
 <p><span class="tag {{ s.css }}">{{ s.label }}</span></p></div>
-<div class="card"><h2>My enrollment QR code</h2><img src="{{ url_for('qr', ref=s.row['ref']) }}" width="170" height="170" alt="Enrollment QR code">
-<p class="mute">Show this to the registrar. It cannot be edited and expires in 30 days.</p></div></div>
+<div class="card"><h2>Enrollment progress</h2><div class="steps">{% for name, done in s.steps %}<p>{{ 'Done' if done else 'To do' }}: <span class="{{ 'ok' if done else 'mute' }}">{{ name }}</span></p>{% endfor %}</div></div>
+<div class="card"><h2>My enrollment QR code</h2><img src="{{ url_for('qr', ref=s.row['ref']) }}" width="150" height="150" alt="Enrollment QR code">
+<p class="mute">The registrar scans this. It shows Officially enrolled only when every step is done.</p></div></div>
+<div class="card"><h2>What to do next</h2>
+<p><a class="btn" href="{{ url_for('advising') }}">Choose subjects and schedule</a>
+<a class="btn" href="{{ url_for('payment') }}">Fees and payment</a>
+<a class="btn" href="{{ url_for('student_slip', kind='advising') }}">Advising slip</a>
+<a class="btn" href="{{ url_for('student_slip', kind='assessment') }}">Assessment slip</a>
+{% if s.enrolled %}<a class="btn" href="{{ url_for('student_slip', kind='certificate') }}">Certificate of enrollment</a>{% endif %}</p></div>
+{% if s.assessment.rows %}<div class="card"><h2>My subjects and schedule</h2>
+<table><tr><th>Subject</th><th>Section</th><th>Days and time</th><th>Room</th><th>Units</th></tr>
+{% for r in s.assessment.rows %}<tr><td>{{ r['code'] }} {{ r['title'] }}</td><td>{{ r['section_code'] }}</td><td>{{ r['days'] }} {{ r['time_start'] }} to {{ r['time_end'] }}</td><td>{{ r['room'] }}</td><td>{{ r['units'] }}</td></tr>{% endfor %}</table>
+<p>Subjects status: <b>{{ s.adv_status }}</b>{% if s.adv_note %} ({{ s.adv_note }}){% endif %}. Total fees: <b>{{ s.assessment.total|peso }}</b>, paid: <b>{{ s.paid|peso }}</b>, balance: <b>{{ s.balance|peso }}</b>.</p></div>{% endif %}
 <div class="card"><h2>Documents (PDF, JPG or PNG, up to 2 MB)</h2>
 <table><tr><th>Requirement</th><th>Status</th><th>Upload</th></tr>
 {% for d in s.docs %}<tr><td>{{ d.type }}</td>

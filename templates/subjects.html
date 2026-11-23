@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Add a subject</h2><form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div class="grid"><div><label for="code">Code</label><input id="code" name="code" required maxlength="12"></div>
+<div><label for="title">Title</label><input id="title" name="title" required maxlength="80"></div>
+<div><label for="units">Units</label><input id="units" name="units" type="number" min="1" max="6" value="3"></div>
+<div><label for="program">Program</label><select id="program" name="program">{% for p in programs %}<option>{{ p }}</option>{% endfor %}</select></div>
+<div><label for="year_level">Year</label><select id="year_level" name="year_level"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+<div><label for="semester">Semester</label><select id="semester" name="semester"><option>1</option><option>2</option></select></div></div>
+<p><button>Add subject</button></p></form></div>
+<div class="card"><h2>Import many subjects (CSV)</h2><p class="mute">Columns: code, title, units, program (a program or ALL), year_level, semester.</p>
+<form method="post" action="{{ url_for('subjects_import') }}" enctype="multipart/form-data"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="file" name="file" accept=".csv" required aria-label="CSV file"><p><button class="alt">Import</button></p></form></div>
+<div class="card"><h2>Subjects ({{ rows|length }})</h2><table><tr><th>Code</th><th>Title</th><th>Units</th><th>Program</th><th>Year</th><th>Sem</th></tr>
+{% for r in rows %}<tr><td>{{ r['code'] }}</td><td>{{ r['title'] }}</td><td>{{ r['units'] }}</td><td>{{ r['program'] }}</td><td>{{ r['year_level'] }}</td><td>{{ r['semester'] }}</td></tr>{% endfor %}</table></div>{% endblock %}

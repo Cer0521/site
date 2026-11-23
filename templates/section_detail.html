@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>{{ sec['code'] }} {{ sec['title'] }}, section {{ sec['section_code'] }}</h2>
+<p>{{ sec['days'] }} {{ sec['time_start'] }} to {{ sec['time_end'] }}, {{ sec['room'] }}. Seats used: {{ seats }} of {{ sec['capacity'] }}.</p>
+<p><a class="btn alt" href="{{ url_for('export_roster', sid=sec['id']) }}">Download class list (CSV)</a></p>
+<table><tr><th>Ref</th><th>Name</th><th>Program</th><th>Year</th><th>Subjects status</th></tr>
+{% for r in roster %}<tr><td><a href="{{ url_for('detail', ref=r['ref']) }}">{{ r['ref'] }}</a></td><td>{{ r['name'] }}</td><td>{{ r['program'] }}</td><td>{{ r['year_level'] }}</td><td>{{ r['status'] }}</td></tr>{% endfor %}</table></div>{% endblock %}

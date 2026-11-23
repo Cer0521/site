@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Add a class section</h2><form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div class="grid"><div><label for="subject_id">Subject</label><select id="subject_id" name="subject_id">{% for s in subs %}<option value="{{ s['id'] }}">{{ s['code'] }} {{ s['title'] }}</option>{% endfor %}</select></div>
+<div><label for="section_code">Section</label><input id="section_code" name="section_code" required maxlength="6"></div>
+<div><label for="days">Days (M, T, W, Th, F, S)</label><input id="days" name="days" placeholder="MWF" required></div>
+<div><label for="time_start">Start</label><input id="time_start" name="time_start" placeholder="08:00" required></div>
+<div><label for="time_end">End</label><input id="time_end" name="time_end" placeholder="09:00" required></div>
+<div><label for="room">Room</label><input id="room" name="room" required maxlength="30"></div>
+<div><label for="capacity">Capacity</label><input id="capacity" name="capacity" type="number" min="1" max="200" value="40"></div></div>
+<p><button>Add section</button></p></form></div>
+<div class="card"><h2>Sections and seats</h2><table><tr><th>Subject</th><th>Section</th><th>Days and time</th><th>Room</th><th>Seats used</th><th></th></tr>
+{% for x in rows %}<tr><td>{{ x.r['code'] }} {{ x.r['title'] }}</td><td><a href="{{ url_for('section_detail', sid=x.r['id']) }}">{{ x.r['section_code'] }}</a></td><td>{{ x.r['days'] }} {{ x.r['time_start'] }} to {{ x.r['time_end'] }}</td><td>{{ x.r['room'] }}</td><td>{{ x.seats }} of {{ x.r['capacity'] }}</td>
+<td><form method="post" action="{{ url_for('section_delete', sid=x.r['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="alt">Delete</button></form></td></tr>{% endfor %}</table></div>{% endblock %}

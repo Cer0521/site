@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>Add a student record (walk-in)</h2>
+<form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label for="name">Full name</label><input id="name" name="name" value="{{ form.get('name','') }}" required maxlength="80">
+<label for="email">Email</label><input id="email" name="email" type="email" value="{{ form.get('email','') }}" required maxlength="80">
+<label for="program">Program</label><select id="program" name="program">{% for p in programs %}<option {{ 'selected' if form.get('program')==p }}>{{ p }}</option>{% endfor %}</select>
+<label for="year_level">Year level</label><select id="year_level" name="year_level">{% for y in [1,2,3,4] %}<option value="{{ y }}" {{ 'selected' if form.get('year_level')|string==y|string }}>Year {{ y }}</option>{% endfor %}</select>
+<label for="campus">Campus</label><select id="campus" name="campus">{% for c in campuses %}<option {{ 'selected' if form.get('campus')==c }}>{{ c }}</option>{% endfor %}</select>
+<label><input type="checkbox" name="consent"> The student gave consent in person for BCC to process their data for enrollment (RA 10173).</label>
+<p><button>Create record</button></p></form></div>{% endblock %}
