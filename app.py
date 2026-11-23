@@ -14,9 +14,7 @@ import os
 import re
 import secrets
 import sqlite3
-import sys
 import time
-import traceback
 import uuid
 from datetime import datetime
 from functools import wraps
@@ -139,8 +137,15 @@ def insert_student(c, actor=None, action="registered"):
     db = get_db()
     cur = db.execute("INSERT INTO students(name,email,program,campus,year_level,consent,created) VALUES(?,?,?,?,?,1,?)",
                      (c["name"], c["email"], c["program"], c["campus"], c["year_level"], now()))
-    ref = f"BCC-2027-{cur.lastrowid:04d}"
-    db.execute("UPDATE students SET ref=? WHERE id=?", (ref, cur.lastrowid))
+    student_id = cur.lastrowid
+    if student_id is None:
+        inserted = cur.fetchone()
+        student_id = inserted["id"] if inserted else None
+    if student_id is None:
+        db.rollback()
+        raise RuntimeError("Student registration did not return a valid record ID.")
+    ref = f"BCC-2027-{student_id:04d}"
+    db.execute("UPDATE students SET ref=? WHERE id=?", (ref, student_id))
     db.commit()
     audit(actor or f"student:{ref}", f"{action} {ref}" if actor else action)
     return ref
@@ -370,12 +375,6 @@ def create_app(config=None):
     @app.errorhandler(413)
     def too_big(_):
         return "File is larger than 2 MB.", 413
-
-    @app.errorhandler(500)
-    def internal_error(error):
-        details = traceback.format_exc()
-        print(f"INTERNAL SERVER ERROR:\n{details}", file=sys.stderr)
-        return f"INTERNAL SERVER ERROR:\n\n{details}", 500
 
     # ----- student side: registration, status, documents, QR -----
     @app.get("/")

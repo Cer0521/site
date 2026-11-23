@@ -95,16 +95,23 @@ class CursorWrapper:
     def __init__(self, cur):
         self._cur = cur
         self.lastrowid = None
-        # If this was an INSERT with RETURNING id, capture lastrowid
+        self._pending_row = None
         try:
             if cur.description and len(cur.description) > 0 and cur.description[0][0] == "id":
                 row = cur.fetchone()
                 if row:
                     self.lastrowid = row["id"]
+                    self._pending_row = row
         except Exception:
             pass
 
     def fetchone(self):
+        if self._pending_row is not None:
+            row = self._pending_row
+            self._pending_row = None
+            keys = [d[0] for d in self._cur.description]
+            values = list(row.values())
+            return DictRow(row, keys=keys, values=values)
         try:
             row = self._cur.fetchone()
         except Exception:
