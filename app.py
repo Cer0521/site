@@ -14,7 +14,9 @@ import os
 import re
 import secrets
 import sqlite3
+import sys
 import time
+import traceback
 import uuid
 from datetime import datetime
 from functools import wraps
@@ -368,6 +370,12 @@ def create_app(config=None):
     @app.errorhandler(413)
     def too_big(_):
         return "File is larger than 2 MB.", 413
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        details = traceback.format_exc()
+        print(f"INTERNAL SERVER ERROR:\n{details}", file=sys.stderr)
+        return f"INTERNAL SERVER ERROR:\n\n{details}", 500
 
     # ----- student side: registration, status, documents, QR -----
     @app.get("/")
