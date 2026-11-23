@@ -520,8 +520,14 @@ def create_app(config=None):
     return app
 
 
-# Top-level application instance for WSGI / Vercel
-app = create_app()
+# Lazy top-level application wrapper for WSGI / Vercel
+def application(environ, start_response):
+    global _app
+    if "_app" not in globals():
+        _app = create_app()
+    return _app(environ, start_response)
+
+app = application
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    create_app().run(debug=False)
