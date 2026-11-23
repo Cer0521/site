@@ -187,7 +187,7 @@ def assessment(student_id):
 
 def paid_total(student_id):
     r = get_db().execute("SELECT COALESCE(SUM(amount),0) s FROM payments WHERE student_id=?", (student_id,)).fetchone()
-    return round(r["s"], 2)
+    return round(float(r["s"]), 2)
 
 
 def plan_for(student_id):
