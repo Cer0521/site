@@ -1,2 +1,14 @@
+[project]
+name = "bcc-uers"
+version = "1.0.0"
+description = "BCC Unified Enrollment and Registration System"
+requires-python = ">=3.12"
+dependencies = [
+    "Flask>=3.0",
+    "qrcode[pil]>=7.4",
+    "psycopg2-binary>=2.9.9",
+    "python-dotenv>=1.0.0",
+]
+
 [tool.vercel]
 entrypoint = "api/index.py"
